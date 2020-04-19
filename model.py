@@ -15,13 +15,11 @@ class Model:
             self.text_clf = pickle.load(f)
             
     def predict(self, data):
-        title_cleaned = self.clean(data['title'])
         text_cleaned = self.clean(data['text'])
 
-        predict_title = self.title_clf.predict([title_cleaned])[0]
         predict_text = self.text_clf.predict([text_cleaned])[0]
         
-        return predict_title, predict_text
+        return predict_text
     
     def clean(self, tex): 
         tex = tex.lower()

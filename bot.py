@@ -16,6 +16,14 @@ logger = logging.getLogger(__name__)
 
 model = Model()
 
+def is_url(text):
+    if text[:4] == 'http':
+        return True
+    elif text[:3] == 'www':
+        return True
+    return False
+
+
 def start(update, context):
     """Send a message when the command /start is issued."""
     update.message.reply_text('Привет! Я очень умный бот и могу понимать является ли новость о коронавирусе фейком или нет.\nПросто скинь ссылку на новость')
@@ -31,9 +39,18 @@ def check_fake_news(update, context):
     p = Parser()
     logger.info(url)
     logger.info(type(url))
-    data = p.read_news(url)
+    if is_url(url):
+        data = p.read_news(url)
+    elif len(url.split(' ')) > 10:
+        data = {'text': url}
+    else:
+        raise ValueError
     predict = model.predict(data)
-    update.message.reply_text('title = {}\ntext = {}'.format(predict[0], predict[1]))
+    if predict == 1:
+        msg = 'Fake news'
+    else:
+        msg = 'Real news'
+    update.message.reply_text(msg)
 
 
 def error(update, context):
